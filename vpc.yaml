@@ -1,0 +1,140 @@
+Resources:
+
+ #=================================
+ # VPCの作成
+ #=================================
+  tpVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+      - Key: Name
+        Value: techpit
+ #=================================
+ # インターネットゲートウェイの作成
+ #=================================
+  tpInternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+      - Key: Name
+        Value: techpit
+
+  tpAttachGateway:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      InternetGatewayId: !Ref tpInternetGateway
+      VpcId: !Ref tpVPC
+
+ #=================================
+ # NATゲートウェイの作成
+ #=================================
+  tpNata:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      AllocationId: !GetAtt tpEIPNata.AllocationId
+      SubnetId: !Ref tpSubnet01a
+      Tags:
+      - Key: Name
+        Value: techpita
+  tpEIPNata:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: vpc
+
+ 
+ #=================================
+ # サブネットの作成
+ #=================================
+  tpSubnet01a:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1a"
+      CidrBlock: 10.0.0.0/24
+      Tags:
+      - Key: Name
+        Value: subnet01a
+      VpcId: !Ref tpVPC
+
+  tpSubnet02a:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1a"
+      CidrBlock: 10.0.1.0/24
+      Tags:
+      - Key: Name
+        Value: subnet02a
+      VpcId: !Ref tpVPC
+
+  tpSubnet03a:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1a"
+      CidrBlock: 10.0.2.0/24
+      Tags:
+      - Key: Name
+        Value: subnet03a
+      VpcId: !Ref tpVPC
+ #=================================
+ # ルートテーブルの作成
+ #=================================
+  tpRouteTable01:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      Tags:
+      - Key: Name
+        Value: techpit01
+      VpcId: !Ref tpVPC
+
+  tpRouteTableAssociation01a:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref tpRouteTable01
+      SubnetId: !Ref tpSubnet01a
+
+  tpRoute01:
+    Type: "AWS::EC2::Route"
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref tpInternetGateway
+      RouteTableId: !Ref tpRouteTable01
+  
+  tpRouteTable02a:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref tpVPC 
+      Tags:
+      - Key: Name
+        Value: techpit02a
+
+  tpRouteTableAssociation02a:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref tpSubnet02a
+      RouteTableId: !Ref tpRouteTable02a
+
+  tpRoute02a:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref tpRouteTable02a
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref tpNata
+
+  tpRouteTable03:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref tpVPC
+      Tags:
+      - Key: Name
+        Value: techpit03
+
+  tpRouteTableAssociation03a:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref tpSubnet03a
+      RouteTableId: !Ref tpRouteTable03
+
+
+
