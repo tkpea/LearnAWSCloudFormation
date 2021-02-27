@@ -39,12 +39,26 @@ Resources:
       Tags:
       - Key: Name
         Value: techpita
+
   tpEIPNata:
     Type: "AWS::EC2::EIP"
     Properties:
       Domain: vpc
 
- 
+  tpNatc:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      AllocationId: !GetAtt tpEIPNatc.AllocationId
+      SubnetId: !Ref tpSubnet01c
+      Tags:
+       - Key: Name
+         Value: techpit
+  
+  tpEIPNatc:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: vpc
+
  #=================================
  # サブネットの作成
  #=================================
@@ -76,6 +90,36 @@ Resources:
       Tags:
       - Key: Name
         Value: subnet03a
+      VpcId: !Ref tpVPC
+
+  tpSubnet01c:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1c"
+      CidrBlock: 10.0.100.0/24
+      Tags:
+      - Key: Name
+        Value: subnet01c
+      VpcId: !Ref tpVPC
+
+  tpSubnet02c:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1c"
+      CidrBlock: 10.0.101.0/24
+      Tags:
+      - Key: Name
+        Value: subnet02c
+      VpcId: !Ref tpVPC
+
+  tpSubnet03c:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1c"
+      CidrBlock: 10.0.102.0/24
+      Tags:
+      - Key: Name
+        Value: subnet03c
       VpcId: !Ref tpVPC
  #=================================
  # ルートテーブルの作成
@@ -136,5 +180,36 @@ Resources:
       SubnetId: !Ref tpSubnet03a
       RouteTableId: !Ref tpRouteTable03
 
+  tpRouteTableAssociation01c:
+      Type: "AWS::EC2::SubnetRouteTableAssociation"
+      Properties:
+        RouteTableId: !Ref tpRouteTable01
+        SubnetId: !Ref tpSubnet01c
 
+  tpRouteTable02c:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref tpVPC 
+      Tags:
+      - Key: Name
+        Value: techpit02c
+
+  tpRouteTableAssociation02c:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref tpSubnet02c
+      RouteTableId: !Ref tpRouteTable02c
+
+  tpRoute02c:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref tpRouteTable02c
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref tpNatc
+
+  tpRouteTableAssociation03c:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref tpSubnet03c
+      RouteTableId: !Ref tpRouteTable03
 
