@@ -59,6 +59,20 @@ Resources:
     Properties:
       Domain: vpc
 
+  tpNatd:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      AllocationId: !GetAtt tpEIPNatd.AllocationId
+      SubnetId: !Ref tpSubnet01d
+      Tags:
+      - Key: Name
+        Value: techpitd
+
+  tpEIPNatd:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: vpc
+
  #=================================
  # サブネットの作成
  #=================================
@@ -121,6 +135,37 @@ Resources:
       - Key: Name
         Value: subnet03c
       VpcId: !Ref tpVPC
+
+  tpSubnet01d:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1d"
+      CidrBlock: 10.0.200.0/24
+      Tags:
+      - Key: Name
+        Value: subnet01d
+      VpcId: !Ref tpVPC
+
+  tpSubnet02d:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1d"
+      CidrBlock: 10.0.201.0/24
+      Tags:
+      - Key: Name
+        Value: subnet02d
+      VpcId: !Ref tpVPC
+
+  tpSubnet03d:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1d"
+      CidrBlock: 10.0.202.0/24
+      Tags:
+      - Key: Name
+        Value: subnet03d
+      VpcId: !Ref tpVPC
+
  #=================================
  # ルートテーブルの作成
  #=================================
@@ -213,3 +258,35 @@ Resources:
       SubnetId: !Ref tpSubnet03c
       RouteTableId: !Ref tpRouteTable03
 
+  tpRouteTableAssociation01d:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref tpRouteTable01
+      SubnetId: !Ref tpSubnet01d
+
+  tpRouteTable02d:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref tpVPC
+      Tags:
+      - Key: Name
+        Value: techpit02d
+
+  tpRouteTableAssociation02d:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref tpSubnet02d
+      RouteTableId: !Ref tpRouteTable02d
+
+  tpRoute02d:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref tpRouteTable02d
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref tpNatd
+
+  tpRouteTableAssociation03d:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref tpSubnet03d
+      RouteTableId: !Ref tpRouteTable03
