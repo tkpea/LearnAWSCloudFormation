@@ -10,11 +10,12 @@ Parameters:
   Env:
     Type: String
     Default: staging
-    AllowedValues:
-    - production
-    - development
-    - staging
-    Description: Enter the enviroment.
+    AllowedValues: 
+     - production
+     - development
+     - staging
+    Description: Enter the environment.
+
 
 Outputs:
   VpcId:
@@ -35,6 +36,7 @@ Outputs:
     Export:
       Name: !Join [ "-", [ !Ref Project, !Ref Env, IGWID ] ]
 
+
 Resources:
 
  #=================================
@@ -49,6 +51,7 @@ Resources:
       Tags:
       - Key: Name
         Value: !Join [ "-", [ !Ref Project, !Ref Env ] ]
+
 
  #=================================
  # インターネットゲートウェイの作成
@@ -66,6 +69,7 @@ Resources:
       InternetGatewayId: !Ref tpInternetGateway
       VpcId: !Ref tpVPC
 
+
  #=================================
  # NATゲートウェイの作成
  #=================================
@@ -76,7 +80,7 @@ Resources:
       SubnetId: !Ref tpSubnet01a
       Tags:
       - Key: Name
-        Value: !Join [ "-", [ !Ref Project, !Ref Env, a ] ]
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, 'a' ] ]
 
   tpEIPNata:
     Type: "AWS::EC2::EIP"
@@ -89,9 +93,9 @@ Resources:
       AllocationId: !GetAtt tpEIPNatc.AllocationId
       SubnetId: !Ref tpSubnet01c
       Tags:
-       - Key: Name
-         Value: !Join [ "-", [ !Ref Project, !Ref Env, c ] ]
-  
+      - Key: Name
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, 'c' ] ]
+
   tpEIPNatc:
     Type: "AWS::EC2::EIP"
     Properties:
@@ -104,12 +108,13 @@ Resources:
       SubnetId: !Ref tpSubnet01d
       Tags:
       - Key: Name
-        Value: !Join [ "-", [ !Ref Project, !Ref Env, d ] ]
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, 'd' ] ]
 
   tpEIPNatd:
     Type: "AWS::EC2::EIP"
     Properties:
       Domain: vpc
+
 
  #=================================
  # サブネットの作成
@@ -121,7 +126,7 @@ Resources:
       CidrBlock: 10.0.0.0/24
       Tags:
       - Key: Name
-        Value: subnet01a
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '01a' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet02a:
@@ -131,7 +136,7 @@ Resources:
       CidrBlock: 10.0.1.0/24
       Tags:
       - Key: Name
-        Value: subnet02a
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '02a' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet03a:
@@ -141,7 +146,7 @@ Resources:
       CidrBlock: 10.0.2.0/24
       Tags:
       - Key: Name
-        Value: subnet03a
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '03a' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet01c:
@@ -151,7 +156,7 @@ Resources:
       CidrBlock: 10.0.100.0/24
       Tags:
       - Key: Name
-        Value: subnet01c
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '01c' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet02c:
@@ -161,7 +166,7 @@ Resources:
       CidrBlock: 10.0.101.0/24
       Tags:
       - Key: Name
-        Value: subnet02c
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '02c' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet03c:
@@ -171,7 +176,7 @@ Resources:
       CidrBlock: 10.0.102.0/24
       Tags:
       - Key: Name
-        Value: subnet03c
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '03c' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet01d:
@@ -181,7 +186,7 @@ Resources:
       CidrBlock: 10.0.200.0/24
       Tags:
       - Key: Name
-        Value: subnet01d
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '01d' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet02d:
@@ -191,7 +196,7 @@ Resources:
       CidrBlock: 10.0.201.0/24
       Tags:
       - Key: Name
-        Value: subnet02d
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '02d' ] ]
       VpcId: !Ref tpVPC
 
   tpSubnet03d:
@@ -201,8 +206,9 @@ Resources:
       CidrBlock: 10.0.202.0/24
       Tags:
       - Key: Name
-        Value: subnet03d
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '03d' ] ]
       VpcId: !Ref tpVPC
+
 
  #=================================
  # ルートテーブルの作成
@@ -212,7 +218,7 @@ Resources:
     Properties:
       Tags:
       - Key: Name
-        Value: techpit01
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '01' ] ]
       VpcId: !Ref tpVPC
 
   tpRouteTableAssociation01a:
@@ -223,18 +229,19 @@ Resources:
 
   tpRoute01:
     Type: "AWS::EC2::Route"
+    DependsOn: tpAttachGateway
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref tpInternetGateway
       RouteTableId: !Ref tpRouteTable01
-  
+
   tpRouteTable02a:
     Type: "AWS::EC2::RouteTable"
     Properties:
       VpcId: !Ref tpVPC 
       Tags:
       - Key: Name
-        Value: techpit02a
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '02a' ] ]
 
   tpRouteTableAssociation02a:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
@@ -255,7 +262,7 @@ Resources:
       VpcId: !Ref tpVPC
       Tags:
       - Key: Name
-        Value: techpit03
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '03' ] ]
 
   tpRouteTableAssociation03a:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
@@ -264,10 +271,10 @@ Resources:
       RouteTableId: !Ref tpRouteTable03
 
   tpRouteTableAssociation01c:
-      Type: "AWS::EC2::SubnetRouteTableAssociation"
-      Properties:
-        RouteTableId: !Ref tpRouteTable01
-        SubnetId: !Ref tpSubnet01c
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref tpRouteTable01
+      SubnetId: !Ref tpSubnet01c
 
   tpRouteTable02c:
     Type: "AWS::EC2::RouteTable"
@@ -275,7 +282,7 @@ Resources:
       VpcId: !Ref tpVPC 
       Tags:
       - Key: Name
-        Value: techpit02c
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '02c' ] ]
 
   tpRouteTableAssociation02c:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
@@ -308,7 +315,7 @@ Resources:
       VpcId: !Ref tpVPC
       Tags:
       - Key: Name
-        Value: techpit02d
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, '02d' ] ]
 
   tpRouteTableAssociation02d:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
