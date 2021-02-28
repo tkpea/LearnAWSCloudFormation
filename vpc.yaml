@@ -1,6 +1,21 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: "Let's build a VPC environment using AWS CloudFormation!"
 
+Parameters:
+  Project:
+    Type: String
+    Default: techpit
+    Description: Enter the project name.
+
+  Env:
+    Type: String
+    Default: staging
+    AllowedValues:
+    - production
+    - development
+    - staging
+    Description: Enter the enviroment.
+
 Resources:
 
  #=================================
@@ -14,7 +29,8 @@ Resources:
       EnableDnsHostnames: 'true'
       Tags:
       - Key: Name
-        Value: techpit
+        Value: !Join [ "-", [ !Ref Project, !Ref Env ] ]
+
  #=================================
  # インターネットゲートウェイの作成
  #=================================
@@ -23,7 +39,7 @@ Resources:
     Properties:
       Tags:
       - Key: Name
-        Value: techpit
+        Value: !Join [ "-", [ !Ref Project, !Ref Env ] ]
 
   tpAttachGateway:
     Type: "AWS::EC2::VPCGatewayAttachment"
@@ -41,7 +57,7 @@ Resources:
       SubnetId: !Ref tpSubnet01a
       Tags:
       - Key: Name
-        Value: techpita
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, a ] ]
 
   tpEIPNata:
     Type: "AWS::EC2::EIP"
@@ -55,7 +71,7 @@ Resources:
       SubnetId: !Ref tpSubnet01c
       Tags:
        - Key: Name
-         Value: techpit
+         Value: !Join [ "-", [ !Ref Project, !Ref Env, c ] ]
   
   tpEIPNatc:
     Type: "AWS::EC2::EIP"
@@ -69,7 +85,7 @@ Resources:
       SubnetId: !Ref tpSubnet01d
       Tags:
       - Key: Name
-        Value: techpitd
+        Value: !Join [ "-", [ !Ref Project, !Ref Env, d ] ]
 
   tpEIPNatd:
     Type: "AWS::EC2::EIP"
