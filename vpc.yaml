@@ -16,6 +16,25 @@ Parameters:
     - staging
     Description: Enter the enviroment.
 
+Outputs:
+  VpcId:
+    Description: The VPC's ID.
+    Value: !Ref tpVPC
+    Export:
+      Name: !Join [ "-", [ !Ref Project, !Ref Env, VPCID ] ]
+
+  VpcCiderBlock:
+    Description: This is the segmentation of the NW.
+    Value: !GetAtt tpVPC.CidrBlock
+    Export:
+      Name: !Join [ "-", [ !Ref Project, !Ref Env, CiderBlock ] ]
+
+  Igw:
+    Description: The IGW's ID
+    Value: !Ref tpInternetGateway
+    Export:
+      Name: !Join [ "-", [ !Ref Project, !Ref Env, IGWID ] ]
+
 Resources:
 
  #=================================
